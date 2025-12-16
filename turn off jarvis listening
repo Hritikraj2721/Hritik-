@@ -1,0 +1,46 @@
+# Stop listening 
+
+import tkinter as tk
+import speech_recognition as sr
+
+recognizer = sr.Recognizer()
+mic = sr.Microphone()
+stop_listening = None
+
+def callback(recognizer, audio):
+    # background thread – don't touch Tk widgets here
+    try:
+        text = recognizer.recognize_google(audio)
+        print("Heard:", text)
+    except sr.UnknownValueError:
+        print("Could not understand")
+    except sr.RequestError as e:
+        print("API error:", e)
+
+def start_bg():
+    global stop_listening
+    if stop_listening is not None:
+        return  # already running
+    with mic as source:
+        recognizer.adjust_for_ambient_noise(source, duration=0.5)
+    # start background listener; save the stop function
+    stop_listening = recognizer.listen_in_background(mic, callback)
+    status_var.set("Listening...")
+
+def stop_bg():
+    global stop_listening
+    if stop_listening is not None:
+        stop_listening()  # ask the background listener to stop [safe from GUI]
+        stop_listening = None
+    status_var.set("Stopped")
+
+root = tk.Tk()
+root.title("Jarvis Listener Control")
+
+status_var = tk.StringVar(value="Idle")
+tk.Label(root, textvariable=status_var).pack(pady=5)
+
+tk.Button(root, text="Start listening", command=start_bg).pack(pady=5)
+tk.Button(root, text="Stop listening", command=stop_bg).pack(pady=5)
+
+root.mainloop()
