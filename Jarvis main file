@@ -2,9 +2,6 @@ pip install speechrecognition pyaudio pyttsx3 openai
 # Windows (PowerShell)
 setx OPENAI_API_KEY "your-real-key-here"
 
-# macOS / Linux (bash/zsh)
-export OPENAI_API_KEY="your-real-key-here"
-"""
 Jarvis: Voice + GUI + AI + simple personalization in one file.
 
 Features:
